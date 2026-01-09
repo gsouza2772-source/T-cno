@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Tecno Cel • Checkout</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,Arial;
+  background:#f2f4f7;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+.app{
+  width:100%;
+  max-width:420px;
+  background:#fff;
+  border-radius:18px;
+  box-shadow:0 25px 60px rgba(0,0,0,.12);
+  overflow:hidden;
+}
+header{
+  padding:20px;
+  text-align:center;
+  border-bottom:1px solid #eee;
+}
+.logo{
+  font-size:24px;
+  font-weight:700;
+  color:#2e7d32;
+}
+.price{
+  font-size:26px;
+  font-weight:700;
+  color:#2e7d32;
+}
+.page{display:none;padding:20px}
+.page.active{display:block}
+label{font-size:13px}
+input{
+  width:100%;
+  padding:12px;
+  margin:6px 0 12px;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:#2e7d32;
+  color:#fff;
+  font-weight:600;
+  cursor:pointer;
+}
+.secondary{background:#eef1f4;color:#333;margin-top:10px}
+.option{
+  border:1px solid #ddd;
+  border-radius:14px;
+  padding:16px;
+  margin-top:12px;
+  display:flex;
+  justify-content:space-between;
+  cursor:pointer;
+}
+.option:hover{border-color:#2e7d32;background:#f6fff8}
+.code{
+  background:#f7f9fc;
+  border:1px dashed #cfd8dc;
+  padding:14px;
+  border-radius:12px;
+  word-break:break-all;
+}
+.copy{background:#1e88e5;margin-top:10px}
+
+/* BOTÃO ADMIN INVISÍVEL */
+.admin-btn{
+  position:absolute;
+  bottom:5px;
+  left:0;
+  right:0;
+  height:20px;
+  opacity:0;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+  <div class="logo" id="empresaNome"></div>
+  <small>Pagamento seguro</small>
+  <div class="price">R$ 99,90</div>
+</header>
+
+<!-- FORM -->
+<div class="page active" id="form">
+  <label>Nome completo</label>
+  <input id="nome">
+  <label>WhatsApp</label>
+  <input id="telefone">
+  <label>Email</label>
+  <input id="email">
+  <label>Endereço</label>
+  <input id="endereco">
+  <button onclick="continuar()">Continuar</button>
+</div>
+
+<!-- PAGAMENTO -->
+<div class="page" id="pay">
+  <div class="option" onclick="pix()">Pix <span>Imediato</span></div>
+  <div class="option" onclick="boleto()">Boleto <span>Até 2 dias</span></div>
+  <div class="option" onclick="cartao()">Cartão <span>WhatsApp</span></div>
+  <button class="secondary" onclick="mostrar('form')">Voltar</button>
+</div>
+
+<!-- PIX -->
+<div class="page" id="pix">
+  <h3>Pix</h3>
+  <div class="code" id="pixKey"></div>
+  <button class="copy" onclick="copiar(config.pix)">Copiar chave Pix</button>
+</div>
+
+<!-- BOLETO -->
+<div class="page" id="boleto">
+  <h3>Boleto</h3>
+  <div class="code" id="boletoCode"></div>
+  <button class="copy" onclick="copiar(config.boleto)">Copiar código do boleto</button>
+</div>
+
+<!-- ADMIN -->
+<div class="page" id="admin">
+  <h3>Painel Admin</h3>
+  <label>Nome da empresa</label>
+  <input id="adminEmpresa">
+  <label>Chave Pix</label>
+  <input id="adminPix">
+  <label>Código do Boleto</label>
+  <input id="adminBoleto">
+  <button onclick="salvarAdmin()">Salvar alterações</button>
+</div>
+
+<!-- BOTÃO ADMIN INVISÍVEL -->
+<div class="admin-btn" onclick="abrirAdmin()"></div>
+
+</div>
+
+<script>
+const SENHA_ADMIN = "001533";
+
+let config = JSON.parse(localStorage.getItem('config')) || {
+  empresa:'Tecno Cel',
+  pix:'tecno.cel@pix.com',
+  boleto:'00000.00000 11111.111111 22222.222222'
+};
+
+empresaNome.innerText=config.empresa;
+pixKey.innerText=config.pix;
+boletoCode.innerText=config.boleto;
+
+function mostrar(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function continuar(){mostrar('pay')}
+function pix(){mostrar('pix')}
+function boleto(){mostrar('boleto')}
+
+function copiar(texto){
+  navigator.clipboard.writeText(texto);
+  alert('Copiado com sucesso');
+}
+
+function cartao(){
+  const msg=encodeURIComponent(
+`Pagamento Cartão - ${config.empresa}
+Nome: ${nome.value}
+WhatsApp: ${telefone.value}
+Email: ${email.value}
+Endereço: ${endereco.value}
+Valor: R$ 99,90`
+  );
+  window.open('https://wa.me/5511999999999?text='+msg,'_blank');
+}
+
+/* ADMIN COM SENHA */
+function abrirAdmin(){
+  const senha = prompt("Digite a senha do painel admin:");
+  if(senha === SENHA_ADMIN){
+    mostrar('admin');
+    adminEmpresa.value=config.empresa;
+    adminPix.value=config.pix;
+    adminBoleto.value=config.boleto;
+  } else {
+    alert("Senha incorreta");
+  }
+}
+
+function salvarAdmin(){
+  config={
+    empresa:adminEmpresa.value,
+    pix:adminPix.value,
+    boleto:adminBoleto.value
+  };
+  localStorage.setItem('config',JSON.stringify(config));
+  location.reload();
+}
+</script>
+
+</body>
+</html>
